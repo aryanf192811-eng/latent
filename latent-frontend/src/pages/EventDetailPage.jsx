@@ -56,7 +56,7 @@ export default function EventDetailPage() {
 
   if (!event) return <div style={{ padding: 32 }}>Event not found</div>;
 
-  const date = event.starts_at ? new Date(event.starts_at) : null;
+  const date = event.start_time ? new Date(event.start_time) : null;
   const isGoing = event.user_rsvp === 'going';
 
   return (
@@ -93,16 +93,16 @@ export default function EventDetailPage() {
               <span>{format(date, 'h:mm a')}</span>
             </div>
           )}
-          {event.location_text && (
+          {event.location_name && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-3)', fontSize: 14 }}>
               <MapPin size={16} color="var(--blue)" />
-              <span>{event.location_text}</span>
+              <span>{event.location_name}</span>
             </div>
           )}
-          {event.attendees_count != null && (
+          {event.going_count != null && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-3)', fontSize: 14 }}>
               <Users size={16} color="var(--blue)" />
-              <span>{event.attendees_count} going</span>
+              <span>{event.going_count} going</span>
             </div>
           )}
         </div>

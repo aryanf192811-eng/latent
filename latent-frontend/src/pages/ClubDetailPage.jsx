@@ -67,7 +67,7 @@ export default function ClubDetailPage() {
 
         <div style={{ display: 'flex', gap: 20, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-3)' }}>
-            <Users size={14} /> {club.members_count || 0} members
+            <Users size={14} /> {club.member_count || 0} members
           </div>
         </div>
 

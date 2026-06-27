@@ -75,9 +75,8 @@ export function PostCard({ post, activeFilter = 'for_you' }) {
 
   const reactMutation = useMutation({
     mutationFn: ({ type, hasReacted }) =>
-      hasReacted
-        ? api.delete(`/api/posts/${post.id}/react`)
-        : api.post(`/api/posts/${post.id}/react`, { reaction_type: type }),
+      // Backend handles toggle inside POST: if already reacted with same type, it removes it.
+      api.post(`/api/posts/${post.id}/react`, { reaction_type: type }),
     onMutate: async ({ type, hasReacted }) => {
       await queryClient.cancelQueries({ queryKey: INFINITE_KEY });
       const prev = queryClient.getQueryData(INFINITE_KEY);

@@ -177,10 +177,12 @@ function CreateModal({ onClose }) {
 
   const create = useMutation({
     mutationFn: () => {
-      const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      images.forEach(img => fd.append('images', img));
-      return api.post('/api/market', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      // Backend expects JSON, not FormData (no file upload endpoint exists)
+      return api.post('/api/market', {
+        ...form,
+        price: parseFloat(form.price),
+        image_urls: [], // File upload requires a separate CDN/upload service
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: qk.market('all') });

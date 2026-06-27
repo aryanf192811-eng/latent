@@ -32,7 +32,8 @@ export default function NotificationsPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: qk.notifs() }),
   });
 
-  let notifications = data?.items || data || [];
+  // Backend returns { notifications: [], announcements: [], unread_count }
+  let notifications = data?.notifications || data?.items || [];
   if (!Array.isArray(notifications)) notifications = [];
   const unread = notifications.filter(n => !n.is_read).length;
 
@@ -85,9 +86,9 @@ export default function NotificationsPage() {
               <Avatar src={notif.actor?.avatar_url} name={notif.actor?.name} size={40} />
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: 14, fontWeight: notif.is_read ? 400 : 600, color: 'var(--text-1)', lineHeight: 1.4, marginBottom: 3 }}>
-                  {notif.title || notif.message}
+                  {notif.title || notif.message || notif.content}
                 </p>
-                {notif.body && <p style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 3 }}>{notif.body}</p>}
+                {(notif.body || notif.description) && <p style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 3 }}>{notif.body || notif.description}</p>}
                 <p className="mono-sm">
                   {notif.created_at ? formatDistanceToNow(new Date(notif.created_at), { addSuffix: true }) : ''}
                 </p>

@@ -97,7 +97,8 @@ function getSubjectColors(subject) {
 function StudyGroupCard({ group, onJoin, onLeave }) {
   const scheduledAt = group.scheduled_at ? new Date(group.scheduled_at) : null;
   const isMember = group.is_member;
-  const isFull = group.current_members >= group.max_members;
+  const currentMembers = group.member_count || group.current_members || 0;
+  const isFull = currentMembers >= group.max_members;
   const colors = getSubjectColors(group.subject || 'General');
 
   return (
@@ -145,7 +146,7 @@ function StudyGroupCard({ group, onJoin, onLeave }) {
           )}
           <div className="flex items-center gap-2">
              <Users size={16} className="text-blue-400" />
-             {group.current_members || 0}/{group.max_members} Members
+           {currentMembers}/{group.max_members} Members
           </div>
         </div>
       </div>

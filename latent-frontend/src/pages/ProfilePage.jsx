@@ -24,11 +24,8 @@ export default function ProfilePage() {
     queryFn: () => api.get(`/api/users/${id}/profile`).then(r => r.data.user || r.data),
   });
 
-  const { data: postsData } = useQuery({
-    queryKey: ['profile-posts', id],
-    queryFn: () => api.get(`/api/posts?user_id=${id}&page=1&limit=20`).then(r => r.data),
-    enabled: activeTab === 'posts',
-  });
+  // Profile endpoint already returns posts embedded as user.posts
+  // No separate posts query needed — backend /api/posts doesn't support user_id filter
 
   const follow = useMutation({
     mutationFn: () => api.post(`/api/users/${id}/follow`),
@@ -60,7 +57,7 @@ export default function ProfilePage() {
 
   if (!profile) return <div style={{ padding: 32 }}>Profile not found</div>;
 
-  const posts = postsData?.items || [];
+  const posts = profile?.posts || [];
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 32px 80px' }}>
@@ -125,11 +122,11 @@ export default function ProfilePage() {
 
       {/* Posts */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {posts.length === 0 && !postsData
+        {!profile
           ? [1, 2].map(i => <PostSkeleton key={i} />)
           : posts.map(post => <PostCard key={post.id} post={post} />)
         }
-        {postsData && posts.length === 0 && (
+        {profile && posts.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-4)' }}>No posts yet</div>
         )}
       </div>

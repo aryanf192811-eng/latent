@@ -127,7 +127,7 @@ export default function DashboardPage() {
                   <div>
                     <div className="flex justify-between text-xs mb-1">
                       <span>Online Now</span>
-                      <span className="text-primary">{pulseData?.online_now ?? '—'}</span>
+                      <span className="text-primary">{pulseData?.active_users ?? '—'}</span>
                     </div>
                     <div className="w-full bg-white/5 rounded-full h-1.5">
                       <div className="bg-primary h-full rounded-full" style={{ width: '88%' }}></div>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
                   <div>
                     <div className="flex justify-between text-xs mb-1">
                       <span>Events Today</span>
-                      <span className="text-secondary-fixed-dim">{pulseData?.events_today ?? '—'}</span>
+                      <span className="text-secondary-fixed-dim">{pulseData?.upcoming_events?.length ?? '—'}</span>
                     </div>
                     <div className="w-full bg-white/5 rounded-full h-1.5">
                       <div className="bg-secondary-fixed-dim h-full rounded-full" style={{ width: '45%' }}></div>
@@ -145,7 +145,7 @@ export default function DashboardPage() {
                   <div>
                     <div className="flex justify-between text-xs mb-1">
                       <span>New Posts (1h)</span>
-                      <span className="text-tertiary">{pulseData?.new_posts_1h ?? '—'}</span>
+                      <span className="text-tertiary">{pulseData?.posts_last_hour ?? '—'}</span>
                     </div>
                     <div className="w-full bg-white/5 rounded-full h-1.5">
                       <div className="bg-tertiary h-full rounded-full" style={{ width: '25%' }}></div>

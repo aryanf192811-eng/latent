@@ -148,7 +148,7 @@ function ClubCard({ club, onJoin, onLeave }) {
               <h3 className="text-2xl font-bold text-on-surface line-clamp-1">{club.name}</h3>
             </Link>
             <span className="flex items-center gap-1 text-xs font-bold text-on-surface-variant bg-white/40 px-2 py-1 rounded-full backdrop-blur-sm border border-white/50 shadow-sm shrink-0">
-              <span className="material-symbols-outlined text-[16px]">groups</span> {club.members_count || 0}
+              <span className="material-symbols-outlined text-[16px]">groups</span> {club.member_count || 0}
             </span>
           </div>
           

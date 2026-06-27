@@ -118,7 +118,7 @@ function ShaderBackground() {
 }
 
 function EventCard({ event, onRsvp }) {
-  const date = event.starts_at ? new Date(event.starts_at) : null;
+  const date = event.start_time ? new Date(event.start_time) : null;
   const isGoing = event.user_rsvp === 'going';
 
   return (
@@ -152,11 +152,11 @@ function EventCard({ event, onRsvp }) {
         </div>
         <div className="flex items-center gap-2 text-on-surface-variant mb-6 font-medium">
           <span className="material-symbols-outlined text-[20px]">location_on</span>
-          <span className="line-clamp-1">{event.location_text || 'TBA'}</span>
+          <span className="line-clamp-1">{event.location_name || 'TBA'}</span>
         </div>
         <div className="flex items-center gap-2 text-on-surface-variant mb-6 font-medium">
           <span className="material-symbols-outlined text-[20px]">group</span>
-          <span>{event.attendees_count != null ? `${event.attendees_count} going` : '0 going'}</span>
+          <span>{event.going_count != null ? `${event.going_count} going` : '0 going'}</span>
         </div>
         
         <div className="mt-auto flex gap-3">
@@ -192,7 +192,11 @@ export default function EventsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: qk.events(activeFilter),
-    queryFn: () => api.get(`/api/events?filter=${activeFilter}&page=1&limit=12`).then(r => r.data),
+    queryFn: () => {
+      const params = new URLSearchParams({ page: '1', limit: '12' });
+      if (activeFilter === 'upcoming') params.set('upcoming', 'true');
+      return api.get(`/api/events?${params}`).then(r => r.data);
+    },
   });
 
   const rsvpMutation = useMutation({
