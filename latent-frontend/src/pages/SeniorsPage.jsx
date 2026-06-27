@@ -38,7 +38,7 @@ function SeniorCard({ senior }) {
       </div>
       
       <button 
-        onClick={() => toast.info('Contact feature via DM')}
+        onClick={() => toast('🚀 Coming Soon', { description: 'Direct Messaging launches after presentation', duration: 3000 })}
         className="w-full bg-gradient-to-br from-primary to-[#630ed4] text-white py-4 rounded-full font-bold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center justify-center gap-2 active:scale-95 mt-auto"
       >
         <span className="material-symbols-outlined text-[20px]">send</span>

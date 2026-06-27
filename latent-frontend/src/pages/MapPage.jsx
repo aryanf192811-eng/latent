@@ -117,7 +117,8 @@ export default function MapPage() {
   const handleCheckIn = async (locationId) => {
     try {
       const res = await api.post('/api/map/checkin', { location_id: locationId });
-      if (!res.data?.already_checked_in) {
+      const payload = res?.data ?? res;
+      if (!payload?.already_checked_in) {
         setCheckedIn(prev => new Set([...prev, locationId]));
         toast.success(`Checked in at ${selected.name}!`);
         queryClient.invalidateQueries({ queryKey: qk.mapLocs() });

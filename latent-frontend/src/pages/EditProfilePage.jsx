@@ -21,23 +21,17 @@ export default function EditProfilePage() {
   const [interests, setInterests] = useState(user?.interests || []);
 
   const update = useMutation({
-    mutationFn: () => api.patch('/api/users/me', { ...form }),
+    mutationFn: () => api.put('/api/users/me', { ...form, interests }),
     onSuccess: (res) => {
-      updateUser(res.data?.user || form);
+      updateUser(res.data || form);
       toast.success('Profile updated!');
       navigate(`/profile/${user?.id}`);
     },
     onError: err => toast.error(err.message),
   });
 
-  const updateInterests = useMutation({
-    mutationFn: () => api.post('/api/users/me/interests', { interests }),
-    onError: err => toast.error(err.message),
-  });
-
   const handleSave = async () => {
     await update.mutateAsync();
-    if (interests.length > 0) await updateInterests.mutateAsync();
   };
 
   const toggleInterest = (i) => setInterests(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
@@ -96,7 +90,7 @@ export default function EditProfilePage() {
           </div>
         </div>
 
-        <button className="btn-primary" onClick={handleSave} disabled={update.isPending || updateInterests.isPending} style={{ width: '100%', justifyContent: 'center', padding: '13px 24px', gap: 6 }}>
+        <button className="btn-primary" onClick={handleSave} disabled={update.isPending} style={{ width: '100%', justifyContent: 'center', padding: '13px 24px', gap: 6 }}>
           <Save size={16} /> {update.isPending ? 'Saving…' : 'Save Changes'}
         </button>
       </div>

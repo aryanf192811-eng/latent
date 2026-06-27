@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
 import { qk } from '../lib/queryClient';
@@ -57,7 +58,10 @@ export default function DashboardPage() {
             <Link to="/explore" className="px-8 py-3 bg-primary text-on-primary rounded-full font-title-md text-title-md hover:shadow-[0_0_30px_rgba(189,0,255,0.6)] transition-all flex items-center gap-2">
               <span className="material-symbols-outlined">explore</span> Explore Now
             </Link>
-            <button className="px-8 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full font-title-md text-title-md hover:bg-white/20 transition-all">
+            <button
+              className="px-8 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full font-title-md text-title-md hover:bg-white/20 transition-all"
+              onClick={() => toast('🚀 Coming Soon', { description: 'Schedule feature launches after presentation', duration: 3000 })}
+            >
               My Schedule
             </button>
           </div>

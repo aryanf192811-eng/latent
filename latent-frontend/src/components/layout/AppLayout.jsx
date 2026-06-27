@@ -10,6 +10,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useSSE } from '../../hooks/useSSE';
 import { Avatar } from '../common/ImageWithFallback';
 import { toast } from 'sonner';
+import { WeatherWidget } from '../weather/WeatherWidget';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -72,7 +73,10 @@ export function AppLayout() {
             );
           })}
         </nav>
-        <button className="bg-primary-container text-on-primary-container font-label-md text-label-md py-4 rounded-full shadow-[0_0_20px_rgba(189,0,255,0.4)] hover:scale-105 transition-transform">
+        <button
+          className="bg-primary-container text-on-primary-container font-label-md text-label-md py-4 rounded-full shadow-[0_0_20px_rgba(189,0,255,0.4)] hover:scale-105 transition-transform"
+          onClick={() => toast('🚀 Coming Soon', { description: 'Post composer launches after presentation', duration: 3000 })}
+        >
           Post Update
         </button>
       </aside>
@@ -86,6 +90,7 @@ export function AppLayout() {
           </div>
         </div>
         <div className="flex items-center gap-4 lg:gap-6 ml-auto">
+          <WeatherWidget />
           <NavLink to="/notifications" className="relative text-on-surface-variant hover:text-primary transition-colors" onClick={() => setUnreadCount(0)}>
             <Bell size={24} />
             {unreadCount > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-tertiary rounded-full border-2 border-surface"></span>}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import api from '../../lib/api';
@@ -53,6 +53,13 @@ export function PostCard({ post, activeFilter = 'for_you' }) {
   const [commentText, setCommentText] = useState('');
   const [expanded, setExpanded] = useState(false);
   const queryClient = useQueryClient();
+
+  // Fetch comments on demand when comments section is toggled open
+  const { data: commentsData } = useQuery({
+    queryKey: ['comments', post.id],
+    queryFn: () => api.get(`/api/posts/${post.id}/comments`).then(r => r.data),
+    enabled: showComments,
+  });
 
   // Backend returns `user` field (not `author`)
   const author = post.user;
@@ -107,6 +114,7 @@ export function PostCard({ post, activeFilter = 'for_you' }) {
     mutationFn: (content) => api.post(`/api/posts/${post.id}/comments`, { content }),
     onSuccess: () => {
       setCommentText('');
+      queryClient.invalidateQueries({ queryKey: ['comments', post.id] });
       queryClient.invalidateQueries({ queryKey: INFINITE_KEY });
     },
     onError: (err) => toast.error(err.message),
@@ -216,7 +224,7 @@ export function PostCard({ post, activeFilter = 'for_you' }) {
             className="overflow-hidden border-t border-white/20 bg-surface-variant/10"
           >
             <div className="p-5 flex flex-col gap-4">
-              {post.comments?.map(c => (
+              {(Array.isArray(commentsData) ? commentsData : commentsData?.items || []).map(c => (
                 <div key={c.id} className="flex gap-3">
                   <div className="w-8 h-8 shrink-0">
                     <Avatar src={c.user?.avatar_url} name={c.user?.name} size={32} style={{ borderRadius: '50%' }} />
