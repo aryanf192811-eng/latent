@@ -29,8 +29,8 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// POST /api/seniors/register — opt in as mentor
-router.post('/register', auth, async (req, res) => {
+// POST /api/seniors/opt-in — opt in as mentor
+router.post('/opt-in', auth, async (req, res) => {
   try {
     const { bio_mentor, subjects } = req.body;
     await db.query(
@@ -44,8 +44,8 @@ router.post('/register', auth, async (req, res) => {
   }
 });
 
-// DELETE /api/seniors/register — opt out
-router.delete('/register', auth, async (req, res) => {
+// DELETE /api/seniors/opt-in — opt out
+router.delete('/opt-in', auth, async (req, res) => {
   try {
     await db.query('DELETE FROM senior_mentors WHERE user_id=$1', [req.user.id]);
     ok(res, { registered: false });

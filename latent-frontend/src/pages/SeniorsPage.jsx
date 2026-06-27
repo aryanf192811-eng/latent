@@ -53,7 +53,7 @@ function OptInModal({ onClose }) {
   const [form, setForm] = useState({ bio_mentor: '', subjects: '' });
 
   const optIn = useMutation({
-    mutationFn: () => api.post('/api/seniors/register', {
+    mutationFn: () => api.post('/api/seniors/opt-in', {
       bio_mentor: form.bio_mentor,
       subjects: form.subjects.split(',').map(s => s.trim()).filter(Boolean),
     }),
@@ -139,7 +139,7 @@ export default function SeniorsPage() {
   });
 
   const optOut = useMutation({
-    mutationFn: () => api.delete('/api/seniors/register'),
+    mutationFn: () => api.delete('/api/seniors/opt-in'),
     onSuccess: () => { toast.success('Removed from mentor list'); queryClient.invalidateQueries({ queryKey: ['seniors'] }); },
     onError: err => toast.error(err.message),
   });
