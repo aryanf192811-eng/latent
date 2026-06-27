@@ -118,4 +118,92 @@ router.post('/refresh-token', auth, async (req, res) => {
   }
 });
 
+// POST /api/auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return fail(res, 'Email is required');
+
+    // Check if user exists
+    const exists = await db.query('SELECT id FROM users WHERE email=$1', [email]);
+    if (!exists.rows.length) return fail(res, 'User not found', 404);
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Log to console as requested
+    console.log(`\n======================================`);
+    console.log(`🔐 OTP for ${email}: ${otp}`);
+    console.log(`======================================\n`);
+
+    // Invalidate existing OTPs for this email
+    await db.query('UPDATE otp_tokens SET used=TRUE WHERE email=$1', [email]);
+
+    // Insert new OTP with 10 mins expiry
+    await db.query(
+      `INSERT INTO otp_tokens (email, token, expires_at) VALUES ($1, $2, NOW() + INTERVAL '10 minutes')`,
+      [email, otp]
+    );
+
+    ok(res, { message: 'OTP sent successfully', otp });
+  } catch (err) {
+    console.error(err);
+    fail(res, 'Failed to send OTP', 500);
+  }
+});
+
+// POST /api/auth/verify-otp
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return fail(res, 'Email and OTP are required');
+
+    const { rows } = await db.query(
+      `SELECT * FROM otp_tokens 
+       WHERE email=$1 AND token=$2 AND used=FALSE AND expires_at > NOW() 
+       ORDER BY created_at DESC LIMIT 1`,
+      [email, otp]
+    );
+
+    if (!rows.length) return fail(res, 'Invalid or expired OTP', 400);
+
+    // Mark as used
+    await db.query('UPDATE otp_tokens SET used=TRUE WHERE id=$1', [rows[0].id]);
+
+    // Generate a reset token
+    const reset_token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+    ok(res, { reset_token });
+  } catch (err) {
+    console.error(err);
+    fail(res, 'Failed to verify OTP', 500);
+  }
+});
+
+// POST /api/auth/reset-password
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { reset_token, new_password } = req.body;
+    if (!reset_token || !new_password) return fail(res, 'Token and new password required');
+
+    // Verify reset token
+    let decoded;
+    try {
+      decoded = jwt.verify(reset_token, process.env.JWT_SECRET);
+    } catch (e) {
+      return fail(res, 'Invalid or expired reset token', 400);
+    }
+
+    const email = decoded.email;
+    const password_hash = await bcrypt.hash(new_password, 12);
+
+    await db.query('UPDATE users SET password_hash=$1 WHERE email=$2', [password_hash, email]);
+
+    ok(res, { message: 'Password reset successfully' });
+  } catch (err) {
+    console.error(err);
+    fail(res, 'Failed to reset password', 500);
+  }
+});
+
 module.exports = router;

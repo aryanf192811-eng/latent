@@ -18,7 +18,10 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true); setError('');
     try {
-      await api.post('/api/auth/forgot-password', { email });
+      const res = await api.post('/api/auth/forgot-password', { email });
+      console.log(`\n======================================`);
+      console.log(`🔐 OTP for ${email}: ${res.data.otp}`);
+      console.log(`======================================\n`);
       setStep(2);
     } catch (err) { setError(err.message); }
     finally { setLoading(false); }
