@@ -11,6 +11,7 @@ import { useSSE } from '../../hooks/useSSE';
 import { Avatar } from '../common/ImageWithFallback';
 import { toast } from 'sonner';
 import { WeatherWidget } from '../weather/WeatherWidget';
+import GlobalSearch from './GlobalSearch';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -84,10 +85,7 @@ export function AppLayout() {
       {/* Top Navigation Bar */}
       <header className="fixed top-0 left-0 lg:left-72 right-0 h-20 bg-surface/20 backdrop-blur-xl border-b border-outline-variant/20 z-40 px-6 lg:px-10 flex items-center justify-between">
         <div className="flex-1 max-w-xl hidden sm:block">
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
-            <input className="w-full bg-white/5 border border-outline-variant/20 rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-body-md font-body-md text-on-surface" placeholder="Search campus events, groups, people..." type="text"/>
-          </div>
+          <GlobalSearch />
         </div>
         <div className="flex items-center gap-4 lg:gap-6 ml-auto">
           <WeatherWidget />

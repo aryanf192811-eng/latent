@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 
@@ -26,9 +28,22 @@ app.use(cors({
 }));
 app.options('*', cors()); // pre-flight for all routes
 
+// Security headers
+app.use(helmet());
+
+// Request ID Middleware
+app.use((req, res, next) => {
+  req.id = req.headers['x-request-id'] || uuidv4();
+  res.setHeader('X-Request-Id', req.id);
+  next();
+});
+
 // Logging
-if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('dev'));
+morgan.token('id', req => req.id);
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan(':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" - :response-time ms'));
+} else if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('[:id] :method :url :status :response-time ms - :res[content-length]'));
 }
 
 // Body parsing
@@ -73,6 +88,7 @@ app.use('/api/seniors',       require('./routes/seniors'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/pulse',         require('./routes/pulse'));
 app.use('/api/weather',       require('./routes/weather'));
+app.use('/api/search',        require('./routes/search'));
 
 // 404 handler
 app.use((req, res) => {
@@ -81,8 +97,17 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
+  const isProd = process.env.NODE_ENV === 'production';
+  
+  console.error(`[ERROR] Request ID: ${req.id} | ${req.method} ${req.url}`);
   console.error(err.stack);
-  res.status(500).json({ success: false, error: 'Internal server error' });
+  
+  res.status(500).json({ 
+    success: false, 
+    error: isProd ? 'Internal server error' : err.message,
+    ...(isProd ? {} : { stack: err.stack }),
+    requestId: req.id
+  });
 });
 
 module.exports = app;
